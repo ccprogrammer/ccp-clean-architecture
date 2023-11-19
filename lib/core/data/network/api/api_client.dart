@@ -1,12 +1,24 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:ccp_clean_architecture/core/res/api_res.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:logger/logger.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
-import 'api_exceptions.dart';
+import '../../../errors/exceptions.dart';
+
+enum CallStatus {
+  initial,
+  loading,
+  success,
+  error,
+  empty,
+  cache,
+  refresh,
+}
 
 enum RequestType {
   get,
@@ -16,6 +28,8 @@ enum RequestType {
 }
 
 class ApiClient {
+  ApiClient._();
+
   static final Dio _dio = Dio(BaseOptions(headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
@@ -38,41 +52,40 @@ class ApiClient {
   // request timeout (default 10 seconds)
   static const int _timeoutInSeconds = 10;
 
-  /// dio getter (used for testing)
-  static get dio => _dio;
+  static const Map<String, dynamic> _headersFormat = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    // 'Authorization': 'Bearer ', // Uncomment this and put actual token
+  };
 
-  /// perform safe api request
-  static call(
+  /// Once the api call success it will return [Response]
+  /// if the call is failed it will return [ServerException]
+  /// to use the condition wether the call is success or failed
+  /// do it like this
+  /// ```dart
+  /// final response = await ApiClient.call('https://api-url-here', RequestType.get);
+  /// if(response is ServerException){
+  ///  ... do something here
+  /// showSnackBar(title: response.message);
+  /// }
+  /// ```
+  static Future call(
     String url,
     RequestType requestType, {
     Map<String, dynamic>? headers,
     Map<String, dynamic>? queryParameters,
-    required Function(Response response) onSuccess,
-    required Function(ApiException error) onError,
     Function(int value, int progress)? onReceiveProgress,
     Function(int total, int progress)?
         onSendProgress, // while sending (uploading) progress
-    Function? onLoading,
     dynamic data,
-    bool isOverwriteException = false,
   }) async {
-    try {
-      Map<String, dynamic> headersFormat = {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        // 'Authorization': 'Bearer *put user token here example: Get.find<AuthController>().user.token',
-      };
-      if (headers != null) {
-        headers.addAll(headersFormat);
-      } else {
-        headers = headersFormat;
-      }
-    } catch (_) {}
+    if (headers != null) {
+      headers.addAll(_headersFormat);
+    } else {
+      headers = _headersFormat;
+    }
 
     try {
-      // 1) indicate loading state
-      await onLoading?.call();
-
       // Check device internet connection
       bool result = await InternetConnectionChecker().hasConnection;
       if (result == false) {
@@ -80,7 +93,6 @@ class ApiClient {
         throw const SocketException('');
       }
 
-      // 2) try to perform http request
       late Response response;
 
       final Options options = Options(
@@ -122,34 +134,32 @@ class ApiClient {
           options: options,
         );
       }
-      // 3) return response (api done successfully)
-      await onSuccess(response);
+
+      return response;
     } on DioException catch (error) {
-      // dio error (api reach the server but not performed successfully
-      _handleDioError(
-        error: error,
+      return ServerException(
+        message: error.message ?? 'Something went wrong, please try again.',
         url: url,
-        onError: onError,
+        response: error.response,
+        statusCode: error.response?.statusCode ?? 500,
       );
-    } on SocketException {
-      // No internet connection
-      _handleSocketException(url: url, onError: onError);
-    } on TimeoutException {
-      // Api call went out of time
-      _handleTimeoutException(url: url, onError: onError);
+      // dio error (api reach the server but not performed successfully
     } catch (error, stackTrace) {
       // print the line of code that throw unexpected exception
-      Logger().e(stackTrace);
-      // unexpected error for example (parsing json error)
-      _handleUnexpectedException(url: url, onError: onError, error: error);
+      if (kDebugMode) Logger().e('stackTrace: $stackTrace');
+      return ServerException(
+        message: 'Something went wrong, please try again.',
+        url: url,
+        statusCode: 500,
+      );
     }
   }
 
-  /// download file
+  /// Download file
   static download(
       {required String url, // file url
       required String savePath, // where to save file
-      required Function(ApiException) onError,
+      required Function(ServerException) onError,
       Function(int value, int progress)? onReceiveProgress,
       required Function onSuccess}) async {
     try {
@@ -163,7 +173,7 @@ class ApiClient {
       );
       onSuccess();
     } catch (error) {
-      var exception = ApiException(
+      var exception = ServerException(
         url: url,
         message: error.toString(),
       );
@@ -171,53 +181,30 @@ class ApiClient {
     }
   }
 
-  /// handle Dio error
-  static _handleDioError({
-    required DioException error,
-    required Function(ApiException) onError,
-    required String url,
-  }) {
-    var exception = ApiException(
-      url: url,
-      message: error.message ?? 'Something Went Error!',
-      statusCode: error.response?.statusCode,
-      response: error.response,
-      data: error.response?.data,
-    );
+  static Future testApiClient() async {
+    final response = await call(ApiRes.singleUser, RequestType.post);
+    final isResponse = response is Response<dynamic>;
+    final isServerException = response is ServerException;
 
-    return onError(exception);
-  }
+    if (response is ServerException) {
+      Logger().e(
+        '''
+Url: ${response.url}
+Status Code: ${response.statusCode}
+Message: ${response.message}
+Response: ${response.response}
+    ''',
+      );
+      return;
+    }
 
-  /// handle unexpected error
-  static _handleUnexpectedException(
-      {required Function(ApiException) onError,
-      required String url,
-      required Object error}) {
-    var exception = ApiException(
-      message: 'Something went wrong',
-      url: url,
+    Logger().w(
+      '''
+runtimeType: ${response.runtimeType}
+isResponse: $isResponse
+isServerException: $isServerException
+response: $response
+    ''',
     );
-    onError(exception);
-  }
-
-  /// handle timeout exception
-  static _handleTimeoutException(
-      {required Function(ApiException) onError, required String url}) {
-    var exception = ApiException(
-      message: 'Server is not responding',
-      url: url,
-      statusCode: 408,
-    );
-    return onError(exception);
-  }
-
-  /// handle socket exception
-  static _handleSocketException(
-      {required Function(ApiException) onError, required String url}) {
-    var exception = ApiException(
-      message: 'No internet connection',
-      url: url,
-    );
-    return onError(exception);
   }
 }

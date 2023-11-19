@@ -1,13 +1,31 @@
-class ServerException implements Exception {
-  const ServerException({required this.message, required this.statusCode});
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:dio/dio.dart';
 
+class ServerException implements Exception {
+  final String url;
   final String message;
-  final String statusCode;
+  final int? statusCode;
+  final Response? response;
+
+  ServerException({
+    required this.url,
+    required this.message,
+    this.statusCode,
+    this.response,
+  });
+
+  @override
+  String toString() {
+    return '\nServerException(\n url: $url,\n message: $message,\n statusCode: $statusCode,\n response: $response\n)';
+  }
 }
 
 class CacheException implements Exception {
-  const CacheException({required this.message, this.statusCode = 500});
-
+  final String objectId;
   final String message;
-  final int statusCode;
+
+  CacheException({
+    required this.objectId,
+    required this.message,
+  });
 }

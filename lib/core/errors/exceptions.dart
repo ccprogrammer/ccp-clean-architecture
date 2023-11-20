@@ -28,4 +28,7 @@ class CacheException implements Exception {
     required this.objectId,
     required this.message,
   });
+
+  @override
+  String toString() => 'CacheException(\n objectId: $objectId,\n message: $message\n)';
 }

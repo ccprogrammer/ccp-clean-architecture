@@ -1,4 +1,7 @@
-import 'package:ccp_clean_architecture/src/splashscreen/presentation/views/splash_screen.dart';
+import 'package:ccp_clean_architecture/src/auth/views/sign_in_screen.dart';
+import 'package:ccp_clean_architecture/src/main_menu/views/main_menu_screen.dart';
+import 'package:ccp_clean_architecture/src/on_boarding/views/on_boarding_screen.dart';
+import 'package:ccp_clean_architecture/src/splashscreen/views/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -38,6 +41,7 @@ final GoRouter _router = GoRouter(
             child: Placeholder(),
           ),
         ),
+
         // Search
         GoRoute(
           parentNavigatorKey: _shellKey,
@@ -65,6 +69,24 @@ final GoRouter _router = GoRouter(
           ),
         ),
       ],
+    ),
+   
+    GoRoute(
+      parentNavigatorKey: _parentKey,
+      path: OnBoardingScreen.route,
+      builder: (context, state) => const OnBoardingScreen(),
+    ),
+
+    GoRoute(
+      parentNavigatorKey: _parentKey,
+      path: SignInScreen.route,
+      builder: (context, state) => const SignInScreen(),
+    ),
+
+    GoRoute(
+      parentNavigatorKey: _parentKey,
+      path: MainMenuScreen.route,
+      builder: (context, state) => const MainMenuScreen(),
     ),
 
     // Initial Routes Splashscreen

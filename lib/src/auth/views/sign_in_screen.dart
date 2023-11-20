@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class SignInScreen extends StatelessWidget {
+  const SignInScreen({super.key});
+
+  static const route = '/sign-in';
 
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: Text('LoginScreen'),
+        child: Text('Sign In'),
       ),
     );
   }

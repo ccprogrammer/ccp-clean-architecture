@@ -11,7 +11,7 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       lazy: false,
-      create: (_) => SplashProvider()..initAuthState(context),
+      create: (_) => SplashProvider()..initState(context),
       child: const _SplashScreen(),
     );
   }

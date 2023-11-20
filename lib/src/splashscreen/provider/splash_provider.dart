@@ -8,19 +8,24 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class SplashProvider extends ChangeNotifier {
-  void initAuthState(BuildContext context) async {
+  Future<void> initState(BuildContext context) async {
     await Future.delayed(const Duration(seconds: 2));
 
     if (!context.mounted) return;
 
+    // if user initialize the app for first time it will navigate to on boarding
     if (Prefs.getIsFirstTimer()) {
       Prefs.setIsFirstTimer();
       context.go(OnBoardingScreen.route);
       return;
     }
 
+    await initAuthState(context);
+  }
+
+  // and do authentication validation
+  Future<void> initAuthState(BuildContext context) async {
     // Future getUser ... call user api repository here
-    // and do authentication validation
 
     final localUser = UserModel(
       uid: 'dsu9fy138947dg24',

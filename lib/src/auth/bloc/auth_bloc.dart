@@ -1,3 +1,4 @@
+import 'package:ccp_clean_architecture/src/auth/repository/auth_repo.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,8 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthInitial()) {
-    on<AuthEvent>(_onSignInEvent);
+    on<SignInEvent>(_onSignInEvent);
   }
 
-  void _onSignInEvent(AuthEvent event, Emitter emit) {}
+  void _onSignInEvent(SignInEvent event, Emitter emit) async {}
 }

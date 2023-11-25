@@ -1,1 +1,3 @@
-class AuthRepo {}
+class AuthRepo {
+  Future<void> signIn() async {}
+}

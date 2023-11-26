@@ -4,21 +4,10 @@ import 'dart:io';
 import 'package:ccp_clean_architecture/core/res/api_res.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:logger/logger.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../../../errors/exceptions.dart';
-
-enum CallStatus {
-  initial,
-  loading,
-  success,
-  error,
-  empty,
-  cache,
-  refresh,
-}
 
 enum RequestType {
   get,
@@ -44,19 +33,22 @@ class ApiClient {
       maxWidth: 90,
     ))
     ..interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) => handler.next(options),
+      onRequest: (options, handler) async {
+        Map<String, dynamic> headersFormat = {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          // 'Authorization': 'Bearer ${Prefs.getUserToken()}', // Uncomment this and put actual token
+        };
+
+        options.headers.addAll(headersFormat);
+        handler.next(options);
+      },
       onError: (error, handler) => handler.next(error),
       onResponse: (response, handler) => handler.next(response),
     ));
 
   // request timeout (default 10 seconds)
   static const int _timeoutInSeconds = 10;
-
-  static const Map<String, dynamic> _headersFormat = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-    // 'Authorization': 'Bearer ', // Uncomment this and put actual token
-  };
 
   /// Once the api call success it will return [Response]
   /// if the call is failed it will return [ServerException]
@@ -68,6 +60,8 @@ class ApiClient {
   ///  ... do something here
   /// showSnackBar(title: response.message);
   /// }
+  ///
+  /// final data = (response as Response).data;
   /// ```
   static Future call(
     String url,
@@ -79,20 +73,7 @@ class ApiClient {
         onSendProgress, // while sending (uploading) progress
     dynamic data,
   }) async {
-    if (headers != null) {
-      headers.addAll(_headersFormat);
-    } else {
-      headers = _headersFormat;
-    }
-
     try {
-      // Check device internet connection
-      bool result = await InternetConnectionChecker().hasConnection;
-      if (result == false) {
-        Logger().e('NO INTERNET');
-        throw const SocketException('');
-      }
-
       late Response response;
 
       final Options options = Options(

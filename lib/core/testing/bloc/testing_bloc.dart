@@ -19,6 +19,7 @@ class TestingBloc extends Bloc<TestingEvent, TestingState> {
     final response = await auth.getTesting();
     if (response is ServerException) {
       Logger().w(response.message);
+      Logger().w(response.statusCode);
 
       return;
     }

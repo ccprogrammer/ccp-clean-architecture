@@ -9,11 +9,12 @@ import 'package:ccp_clean_architecture/core/router/router.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart';
 
 void main() {
   FlutterError.onError = (details) {
     if (kDebugMode) {
-      log(details.exceptionAsString(), stackTrace: details.stack);
+      Logger().w(details.exceptionAsString());
     }
   };
 
@@ -47,7 +48,7 @@ class App extends StatelessWidget {
 
 /// This widget should be separated from [App]
 /// if not it will throw error because
-/// the providers cannot lookup on the same [BuildContext] 
+/// the providers cannot lookup on the same [BuildContext]
 class _App extends StatelessWidget {
   const _App();
 

@@ -1,4 +1,6 @@
 import 'package:ccp_clean_architecture/core/testing/bloc/testing_bloc.dart';
+import 'package:ccp_clean_architecture/src/auth/widgets/sign_in_form.dart';
+import 'package:ccp_clean_architecture/src/auth/widgets/sign_in_sso.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,8 +18,19 @@ class SignInScreen extends StatelessWidget {
         },
         child: const Icon(Icons.bug_report),
       ),
-      body: const Center(
-        child: Text('Sign In'),
+      body: SafeArea(
+        child: ListView(
+          children: [
+            Container(
+              height: double.infinity,
+              constraints: const BoxConstraints(
+                maxHeight: 120,
+              ),
+            ),
+            const SignInForm(),
+            const SignInSSO(),
+          ],
+        ),
       ),
     );
   }

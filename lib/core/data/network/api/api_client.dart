@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:ccp_clean_architecture/core/res/api_res.dart';
 import 'package:dio/dio.dart';

@@ -1,105 +1,56 @@
 import 'package:ccp_clean_architecture/src/auth/views/sign_in_screen.dart';
+import 'package:ccp_clean_architecture/src/auth/views/sign_up_screen.dart';
+import 'package:ccp_clean_architecture/src/explore/views/explore_screen.dart';
+import 'package:ccp_clean_architecture/src/favorites/views/favorites_screen.dart';
+import 'package:ccp_clean_architecture/src/home/views/home_screen.dart';
 import 'package:ccp_clean_architecture/src/main_menu/views/main_menu_screen.dart';
 import 'package:ccp_clean_architecture/src/on_boarding/views/on_boarding_screen.dart';
+import 'package:ccp_clean_architecture/src/profile/views/profile_screen.dart';
 import 'package:ccp_clean_architecture/src/splashscreen/views/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+GoRouter get router => _router;
+
 final _parentKey = GlobalKey<NavigatorState>();
+
 final _shellKey = GlobalKey<NavigatorState>();
 
 class Routes {
-  // Initial Routes
-  static const String splash = '/';
-
-  // Bottom Navigation Routes / Main Menu
-  static const String home = '/home';
-  static const String search = '/search';
-  static const String favorite = '/favorite';
-  static const String profile = '/profile';
-
-  // App Routes
-  static const String settings = '/settings';
-  static const String detail = '/detail';
+  Routes._();
+  static const initial = '/';
 }
 
 final GoRouter _router = GoRouter(
-  initialLocation: Routes.splash,
+  initialLocation: Routes.initial,
   navigatorKey: _parentKey,
   errorBuilder: (context, state) => const Placeholder(),
   routes: [
-    // Bottom Navigation Route / Main Menu
-    ShellRoute(
-      navigatorKey: _shellKey,
-      builder: (context, state, child) => const Placeholder(),
-      routes: [
-        // Home
-        GoRoute(
-          parentNavigatorKey: _shellKey,
-          path: Routes.home,
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: Placeholder(),
-          ),
-        ),
-
-        // Search
-        GoRoute(
-          parentNavigatorKey: _shellKey,
-          path: Routes.search,
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: Placeholder(),
-          ),
-        ),
-
-        // Favorite
-        GoRoute(
-          parentNavigatorKey: _shellKey,
-          path: Routes.favorite,
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: Placeholder(),
-          ),
-        ),
-
-        // Profile
-        GoRoute(
-          parentNavigatorKey: _shellKey,
-          path: Routes.profile,
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: Placeholder(),
-          ),
-        ),
-      ],
+    // Initial Routes Splashscreen
+    GoRoute(
+      parentNavigatorKey: _parentKey,
+      path: Routes.initial,
+      builder: (context, state) => const SplashScreen(),
     ),
-   
+
+    // on first launch app will show on boarding screen
     GoRoute(
       parentNavigatorKey: _parentKey,
       path: OnBoardingScreen.route,
       builder: (context, state) => const OnBoardingScreen(),
     ),
 
-    GoRoute(
-      parentNavigatorKey: _parentKey,
-      path: SignInScreen.route,
-      builder: (context, state) => const SignInScreen(),
-    ),
+    // Auth sign in / sign up
+    ..._routeAuth,
 
-    GoRoute(
-      parentNavigatorKey: _parentKey,
-      path: MainMenuScreen.route,
-      builder: (context, state) => const MainMenuScreen(),
-    ),
-
-    // Initial Routes Splashscreen
-    GoRoute(
-      parentNavigatorKey: _parentKey,
-      path: Routes.splash,
-      builder: (context, state) => const SplashScreen(),
-    ),
+    // Bottom Navigation Route / Main Menu
+    ..._routeMainMenu,
 
     // Detail
+
     GoRoute(
         parentNavigatorKey: _parentKey,
-        path: "${Routes.detail}/:detailId",
+        path: "/detail/:detailId",
         builder: (context, state) {
           String detailId = state.pathParameters['detailId']!;
 
@@ -107,9 +58,10 @@ final GoRouter _router = GoRouter(
         }),
 
     // Settings
+
     GoRoute(
         parentNavigatorKey: _parentKey,
-        path: Routes.settings,
+        path: '/settings',
         builder: (context, state) {
           Map<String, dynamic> extra = {};
           Object? obj;
@@ -124,4 +76,61 @@ final GoRouter _router = GoRouter(
   ],
 );
 
-GoRouter get router => _router;
+final _routeMainMenu = [
+  // Bottom Navigation Route / Main Menu
+  ShellRoute(
+    navigatorKey: _shellKey,
+    builder: (context, state, child) =>
+        MainMenuScreen(location: state.fullPath!, child: child),
+    routes: [
+      // Home
+      GoRoute(
+        parentNavigatorKey: _shellKey,
+        path: HomeScreen.route,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: HomeScreen(),
+        ),
+      ),
+
+      // Explore
+      GoRoute(
+        parentNavigatorKey: _shellKey,
+        path: ExploreScreen.route,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: ExploreScreen(),
+        ),
+      ),
+
+      // Favorites
+      GoRoute(
+        parentNavigatorKey: _shellKey,
+        path: FavoritesScreen.route,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: FavoritesScreen(),
+        ),
+      ),
+
+      // Profile
+      GoRoute(
+        parentNavigatorKey: _shellKey,
+        path: ProfileScreen.route,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: ProfileScreen(),
+        ),
+      ),
+    ],
+  ),
+];
+
+final _routeAuth = [
+  GoRoute(
+    parentNavigatorKey: _parentKey,
+    path: SignInScreen.route,
+    builder: (context, state) => const SignInScreen(),
+  ),
+  GoRoute(
+    parentNavigatorKey: _parentKey,
+    path: SignUpScreen.route,
+    builder: (context, state) => const SignUpScreen(),
+  ),
+];

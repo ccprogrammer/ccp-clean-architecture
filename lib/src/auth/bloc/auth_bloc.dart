@@ -1,4 +1,3 @@
-import 'package:ccp_clean_architecture/src/auth/repository/auth_repo.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';

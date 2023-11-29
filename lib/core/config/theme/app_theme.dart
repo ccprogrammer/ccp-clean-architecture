@@ -9,56 +9,6 @@ import 'app_fonts.dart';
 class AppTheme {
   AppTheme._();
 
-  /// This function will generate ThemeData in [MaterialApp] in [App]
-  static final lightTheme = ThemeData(
-    useMaterial3: true,
-    visualDensity: VisualDensity.adaptivePlatformDensity,
-    fontFamily: AppFonts.poppins,
-    colorSchemeSeed: AppColors.primaryLight,
-    inputDecorationTheme: InputDecorationTheme(
-      alignLabelWithHint: true,
-      fillColor: Colors.white,
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: AppColors.primaryLight,
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: Colors.grey.shade400,
-        ),
-      ),
-      focusedErrorBorder: const OutlineInputBorder(
-        borderSide: BorderSide(
-          color: AppColors.red,
-        ),
-      ),
-      errorBorder: const OutlineInputBorder(
-        borderSide: BorderSide(
-          color: AppColors.red,
-        ),
-      ),
-    ),
-    textTheme: const TextTheme(
-      bodySmall: TextStyle(
-        color: AppColors.black,
-      ),
-      bodyMedium: TextStyle(
-        color: AppColors.black,
-      ),
-      bodyLarge: TextStyle(
-        color: AppColors.black,
-      ),
-    ),
-  );
-
-  static final darkTheme = ThemeData(
-    useMaterial3: true,
-    visualDensity: VisualDensity.adaptivePlatformDensity,
-    fontFamily: AppFonts.poppins,
-    colorSchemeSeed: AppColors.primaryDark,
-  );
-
   /// pass context to lookup the provider for theme change
   static void changeTheme(BuildContext context) {
     context.read<AppProvider>().changeTheme(context);
@@ -71,4 +21,54 @@ class AppTheme {
   }
 
   static bool get getThemeIsLight => Prefs.getThemeIsLight();
+
+  static get lightTheme => _getThemeData(isLightMode: true);
+
+  static get darkTheme => _getThemeData(isLightMode: false);
+
+  /// This function will generate ThemeData in [MaterialApp] in [App]
+  static ThemeData _getThemeData({required bool isLightMode}) {
+    return ThemeData(
+      useMaterial3: true,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+      fontFamily: AppFonts.poppins,
+      colorSchemeSeed:
+          isLightMode ? AppColors.primaryLight : AppColors.primaryDark,
+      inputDecorationTheme: InputDecorationTheme(
+        alignLabelWithHint: true,
+        fillColor: Colors.white,
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: AppColors.primaryLight,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.grey.shade400,
+          ),
+        ),
+        focusedErrorBorder: const OutlineInputBorder(
+          borderSide: BorderSide(
+            color: AppColors.red,
+          ),
+        ),
+        errorBorder: const OutlineInputBorder(
+          borderSide: BorderSide(
+            color: AppColors.red,
+          ),
+        ),
+      ),
+      textTheme: const TextTheme(
+        bodySmall: TextStyle(
+          color: AppColors.black,
+        ),
+        bodyMedium: TextStyle(
+          color: AppColors.black,
+        ),
+        bodyLarge: TextStyle(
+          color: AppColors.black,
+        ),
+      ),
+    );
+  }
 }

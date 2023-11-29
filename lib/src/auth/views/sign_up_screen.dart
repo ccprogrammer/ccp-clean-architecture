@@ -1,3 +1,4 @@
+import 'package:ccp_clean_architecture/src/auth/widgets/sign_up_form.dart';
 import 'package:flutter/material.dart';
 
 class SignUpScreen extends StatelessWidget {
@@ -17,6 +18,7 @@ class SignUpScreen extends StatelessWidget {
                 maxHeight: 120,
               ),
             ),
+            const SignUpForm(),
           ],
         ),
       ),

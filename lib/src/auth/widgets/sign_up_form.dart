@@ -1,13 +1,14 @@
 import 'package:ccp_clean_architecture/core/config/theme/app_colors.dart';
 import 'package:ccp_clean_architecture/core/extensions/context_ext.dart';
+import 'package:ccp_clean_architecture/src/auth/views/sign_in_screen.dart';
 import 'package:ccp_clean_architecture/src/auth/views/sign_up_screen.dart';
 import 'package:ccp_clean_architecture/src/home/views/home_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class SignInForm extends StatelessWidget {
-  const SignInForm({
+class SignUpForm extends StatelessWidget {
+  const SignUpForm({
     super.key,
   });
 
@@ -24,26 +25,26 @@ class SignInForm extends StatelessWidget {
               TextSpan(
                 children: [
                   TextSpan(
-                    text: 'Sign in',
+                    text: 'Sign up',
                     style: context.theme.textTheme.headlineLarge
                         ?.copyWith(height: 0),
                   ),
                   const TextSpan(text: '\n\n'),
                   const TextSpan(
                     text:
-                        'Welcome to Workaholic! Please sign in to continue...',
+                        'Welcome to Workaholic! Please sign up to continue...',
                   ),
                   const TextSpan(text: '\n\n'),
                   const TextSpan(
-                    text: 'Don\'t have an account?',
+                    text: 'Already have an account?',
                   ),
                   TextSpan(
-                    text: ' Register',
+                    text: ' Sign in',
                     style: context.theme.textTheme.bodyLarge?.copyWith(
                       color: AppColors.primaryLight,
                     ),
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () => context.push(SignUpScreen.route),
+                      ..onTap = () => context.go(SignInScreen.route),
                   ),
                 ],
               ),
@@ -64,24 +65,11 @@ class SignInForm extends StatelessWidget {
             ),
           ),
           Container(
-            margin: const EdgeInsets.only(top: 16),
-            alignment: Alignment.topRight,
-            child: TextButton(
-              onPressed: () {},
-              child: Text(
-                'Forgotten password?',
-                style: context.theme.textTheme.bodyMedium?.copyWith(
-                  color: context.theme.primaryColor,
-                ),
-              ),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(top: 16),
+            margin: const EdgeInsets.only(top: 48),
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () => context.go(HomeScreen.route),
-              child: const Text('Sign In'),
+              child: const Text('Sign Up'),
             ),
           ),
         ],

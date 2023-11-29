@@ -12,7 +12,7 @@ List<SingleChildWidget> get providers => [..._providers, ..._blocProviders];
 List<SingleChildWidget> _providers = [
   ChangeNotifierProvider(
     lazy: false,
-    create: (_) => AppProvider()..init(),
+    create: (_) => AppProvider(),
   ),
 ];
 

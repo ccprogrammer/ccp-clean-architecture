@@ -3,6 +3,10 @@ import 'package:ccp_clean_architecture/core/config/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class AppProvider extends ChangeNotifier {
+  AppProvider() {
+    initTheme();
+  }
+  
   bool _isLightModeOn = true;
 
   UserModel? _user;
@@ -11,10 +15,6 @@ class AppProvider extends ChangeNotifier {
 
   ThemeMode get isLightModeOn =>
       _isLightModeOn ? ThemeMode.light : ThemeMode.dark;
-
-  void init() {
-    initTheme();
-  }
 
   /// get last cached theme mode boolean from device
   void initTheme() {

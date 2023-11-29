@@ -16,20 +16,17 @@ final _parentKey = GlobalKey<NavigatorState>();
 
 final _shellKey = GlobalKey<NavigatorState>();
 
-class Routes {
-  Routes._();
-  static const initial = '/';
-}
+const _initial = '/';
 
 final GoRouter _router = GoRouter(
-  initialLocation: Routes.initial,
+  initialLocation: _initial,
   navigatorKey: _parentKey,
   errorBuilder: (context, state) => const Placeholder(),
   routes: [
     // Initial Routes Splashscreen
     GoRoute(
       parentNavigatorKey: _parentKey,
-      path: Routes.initial,
+      path: _initial,
       builder: (context, state) => const SplashScreen(),
     ),
 
@@ -47,7 +44,6 @@ final GoRouter _router = GoRouter(
     ..._routeMainMenu,
 
     // Detail
-
     GoRoute(
         parentNavigatorKey: _parentKey,
         path: "/detail/:detailId",
@@ -58,21 +54,21 @@ final GoRouter _router = GoRouter(
         }),
 
     // Settings
-
     GoRoute(
-        parentNavigatorKey: _parentKey,
-        path: '/settings',
-        builder: (context, state) {
-          Map<String, dynamic> extra = {};
-          Object? obj;
+      parentNavigatorKey: _parentKey,
+      path: '/settings',
+      builder: (context, state) {
+        Map<String, dynamic> extra = {};
+        Object? obj;
 
-          if (state.extra != null) {
-            extra = state.extra as Map<String, dynamic>;
-            obj = extra["obj"];
-          }
+        if (state.extra != null) {
+          extra = state.extra as Map<String, dynamic>;
+          obj = extra["obj"];
+        }
 
-          return const Placeholder();
-        }),
+        return const Placeholder();
+      },
+    ),
   ],
 );
 
